@@ -1,9 +1,9 @@
 const path = require('path')
 
 // 地址指向
-function resolve (dir) {
-  return path.join(__dirname, './', dir)
-}
+// function resolve (dir) {
+//   return path.join(__dirname, './', dir)
+// }
 
 module.exports = {
   chainWebpack: (config) => {
@@ -52,24 +52,40 @@ module.exports = {
   //     })
   //   ]
   // },
-  devServer: {
-    proxy: {
+    devServer: {
+      proxy:{
+        '/': {
+          target: process.env.VUE_APP_BASE_URL,
+          changeOrigin: true,
+        }
+      }
+      // host: '0.0.0.0',
+      // port: 8080,
+      // open: true,
+      // disableHostCheck: true,
+      // overlay: {
+      //   warnings: false,
+      //   errors: true
+      // }
+    }
+  // devServer: {
+  //   proxy: {
     // 此处应该配置为开发服务器的后台地址
     // 配置文档： https://cli.vuejs.org/zh/config/#devserver-proxy
     //   '/applet': {
     //     target: 'https://xyd.youline.cn/'
     //   },
       //测试
-      '/admin': {
-        target: 'http://www.itp.com/index.php/',
-        changeOrigin: true,
-      }
+      // '/admin': {
+      //   target: 'http://127.0.0.1:8000/admin',
+      //   changeOrigin: true
+      // }
       //开发
       //   '/applet': {
       //     target: 'http://localhost:8763/'
       //   },
 
-    }
-  }
+  //   }
+  // }
 };
   

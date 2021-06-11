@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Log from './log.js'
 
 // 引入进度条
 import NProgress from 'nprogress' // Progress 进度条
@@ -20,6 +19,10 @@ const mainRouteMap = [
     path:'/login',
     hidden:true,
     component:()=> import('@/views/Login')
+  },
+  {
+    path:'/home',
+    component:()=>import('@/components/layout/Home')
   },
   {
     path: '/about',
@@ -47,7 +50,11 @@ const router = new VueRouter({
 // 动态路由添加
 router.addRoutes(mainRouteMap)
 router.addRoutes(errorRouteMap)
-router.addRoutes(Log);
+// 循环moduls目录下进行动态路由添加
+const files = require.context('./modules', false, /\.js$/);
+files.keys().forEach(key => {
+  router.addRoutes(files(key).default);
+});
 
 
 // 路由全局前置守卫

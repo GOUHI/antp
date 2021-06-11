@@ -33,16 +33,18 @@
         </a-form-model-item>
         <a-form-model-item>
           <div class="jus">
-            <a-checkbox @change="onAutomatic">
+            <a-checkbox @change="onAutomatic" v-model="query.automatic">
               自动登录
             </a-checkbox>
             <a>忘记密码</a>
           </div>
         </a-form-model-item>
         <a-form-model-item>
-          <a-button type="primary" html-type="submit" :disabled="retButtonDisabled" block>
-            登 录
-          </a-button>
+          <a-spin :spinning="spinning">
+            <a-button type="primary" html-type="submit" :disabled="retButtonDisabled" block>
+              登 录
+            </a-button>
+          </a-spin>
         </a-form-model-item>
       </a-form-model>
         <!-- <Form ref="formInfo" :model="formInfo" :rules="ruleInfo">
@@ -76,7 +78,7 @@
         </div>-->
       </div>
     </div>
-    <div class="global-footer">Copyright © 2021 AndTp中后台产品</div>
+    <div class="global-footer">Copyright © 2021 antp中后台产品</div>
   </div>
 </template>
 <script>
@@ -84,11 +86,12 @@ export default {
   name:'login',
   data() {
     return {
+      spinning: false,
       form: this.$form.createForm(this, { name: 'coordinated' }),
       query:{
         account:'',
         password:'',
-        automatic: 0
+        automatic: false
       },
       rules:{
         account:[
@@ -127,7 +130,16 @@ export default {
     handleSubmit(){
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          console.log('submit');
+          const data = this.query
+          this.$api.login.index(data)
+          .then((res)=>{
+            this.$utils.common.setStorage('token',res.token)
+            this.$utils.common.setStorage('adminInfo',res,2)
+            this.$store.dispatch({
+              type:'user/setUserInfo',
+              userInfo:res
+            })
+          })
         } else {
           console.log('error submit!!');
           return false;
@@ -153,10 +165,10 @@ export default {
 .page-account-container {
   flex: 1;
   padding: 32px 0 24px 0;
-  text-align: center;
   width: 384px;
   margin: 0 auto;
   .page-account-top {
+    text-align: center;
     padding: 32px 0;
     img {
       height: 75px;
