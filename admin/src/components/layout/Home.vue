@@ -27,7 +27,9 @@
         :default-open-keys="['sub1']"
         :style="{ borderRight: 0}"
       >
+        <!-- 一层菜单循环 -->
         <template v-for="(firstItem) in menuData">
+          <!-- 判断一层是否有子级 -->
           <template v-if="firstItem.subMenus && firstItem.subMenus.length > 0">
             <a-sub-menu :key="firstItem.id">
               <span slot="title"><a-icon :type="firstItem.icon" />{{collapsed ? '' : firstItem.name }}</span>
@@ -57,7 +59,7 @@
               </template>
             </a-sub-menu>
           </template>
-
+          <!-- 一层没有子级直接显示 -->
           <template v-else>
             <a-menu-item :key="firstItem.id">
               <a-icon :type="firstItem.icon" />
