@@ -21,8 +21,16 @@ const mainRouteMap = [
     component:()=> import('@/views/Login')
   },
   {
+    name:'home',
     path:'/home',
-    component:()=>import('@/components/layout/Home')
+    component:()=>import('@/components/layout/Home'),
+    children:[
+      {
+        name:'log',
+        path:'log',
+        component:()=> import('@/components/Log')
+      }
+    ]
   },
   {
     path: '/about',
@@ -46,15 +54,15 @@ const errorRouteMap = [
 const router = new VueRouter({
   routes:[]
 })
-
+console.log(mainRouteMap);
 // 动态路由添加
 router.addRoutes(mainRouteMap)
 router.addRoutes(errorRouteMap)
 // 循环moduls目录下进行动态路由添加
-const files = require.context('./modules', false, /\.js$/);
-files.keys().forEach(key => {
-  router.addRoutes(files(key).default);
-});
+// const files = require.context('./modules', false, /\.js$/);
+// files.keys().forEach(key => {
+//   router.addRoutes(files(key).default);
+// });
 
 
 // 路由全局前置守卫
