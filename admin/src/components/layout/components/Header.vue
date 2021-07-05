@@ -1,11 +1,13 @@
 <template>
-  <a-layout-header style="background: #fff; padding: 0">
+  <!-- <a-layout-header style="background: #fff; padding: 0">
     <a-icon
       class="trigger"
       :type="collapsed ? 'menu-unfold' : 'menu-fold'"
       @click="onUpdate()"
     />
-  </a-layout-header>
+  </a-layout-header> -->
+  <div class="header">111
+  </div>
 </template>
 <script>
 export default {
@@ -21,3 +23,8 @@ export default {
   }
 }
 </script>
+<style lang="less" scoped>
+.header{
+  float:right;
+}
+</style>

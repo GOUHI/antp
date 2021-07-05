@@ -34,6 +34,7 @@ module.exports = {
     loaderOptions: {
       less: {
         // globalVars
+        javascriptEnabled:true
       }
     }
   },

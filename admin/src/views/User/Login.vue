@@ -151,7 +151,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .login-main{
-  background-image: url(../assets/images/body.8aa7c4a6.svg);
+  background-image: url(../../assets/images/body.8aa7c4a6.svg);
   background-repeat: no-repeat;
   background-position: 50%;
   background-size: 100%;
