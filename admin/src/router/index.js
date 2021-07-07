@@ -1,9 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import _ from 'lodash'
+import { message } from "ant-design-vue";
 
 // 引入进度条
 import NProgress from 'nprogress' // Progress 进度条
 import 'nprogress/nprogress.css' // Progress 进度条样式
+import { check, isLogin } from '../utils/modules/auth'
 
 
 Vue.use(VueRouter)
@@ -33,6 +36,7 @@ const mainRouteMap = [
   // 菜单组件
   {
     path:'/',
+    meta:{authority:['user','admin']},
     component:()=>import('@/components/layout/BasicLayout'),
     children:[
       // dashboard
@@ -58,7 +62,7 @@ const mainRouteMap = [
       {
         path:'/form',
         name:'form',
-        meta:{icon:'form' ,title:'表单'},
+        meta:{icon:'form' ,title:'表单',authority:['admin']},
         component:{ render: h=> h("router-view")},
         children:[
           {
@@ -108,12 +112,26 @@ const errorRouteMap = [
     path: '*', 
     hidden: true, 
     component: ()=> import('@/components/404') 
+  },
+  { 
+    name: '403',
+    hideInMenu:true,
+    path: '/403', 
+    hidden: true, 
+    component: ()=> import('@/components/403') 
   }
 ]
 
 const router = new VueRouter({
   routes:[]
 })
+
+// 清楚路由重复点击报错
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+ return originalPush.call(this, location).catch(err => err)
+}
+
 // 动态路由添加
 router.options.routes = mainRouteMap
 router.addRoutes(mainRouteMap)
@@ -127,7 +145,26 @@ router.addRoutes(errorRouteMap)
 
 // 路由全局前置守卫
 router.beforeEach(async (to, from, next) => {
-  NProgress.start();
+  // 判断如果路由不一致的情况下才有进度条效果
+  if(to.path !== from.path){
+    NProgress.start();
+  }
+
+  // 判断权限
+  const record = _.findLast(to.matched,record => record.meta.authority)
+  if(record && !check(record.meta.authority)){
+    if(!isLogin() && to.path !== '/user/login'){
+      next({
+        path:'/user/login'
+      })
+    }else if(to.path !== '/403'){
+      message.error('当前无法访问，权限不足')
+      next({
+        path:'/403'
+      })
+    }
+    NProgress.done();
+  }
   next();
 });
 

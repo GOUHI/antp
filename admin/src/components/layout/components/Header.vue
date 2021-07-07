@@ -6,7 +6,8 @@
       @click="onUpdate()"
     />
   </a-layout-header> -->
-  <div class="header">111
+  <div class="header">
+    这1里是header1
   </div>
 </template>
 <script>

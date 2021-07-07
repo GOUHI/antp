@@ -1,14 +1,13 @@
 <template>
   <div style="width: 256px">
     <a-menu
-      :default-selected-keys="['1']"
-      :default-open-keys="['2']"
+      :selectedKeys="selectedKeys"
+      :openKeys.sync="openKeys"
       mode="inline"
       theme="light"
-      :inline-collapsed="collapsed"
     >
       <template v-for="item in menuData">
-        <a-menu-item v-if="!item.children" :key="item.path">
+        <a-menu-item v-if="!item.children" :key="item.path" @click="() => $router.push({path:item.key})">
           <a-icon v-if="item.meta.icon" :type="item.meta.icon" />
           <span>{{ item.meta.title }}</span>
         </a-menu-item>
@@ -19,34 +18,27 @@
 </template>
 
 <script>
-// recommend use functional component
-// <template functional>
-//   <a-sub-menu :key="props.menuInfo.key">
-//     <span slot="title">
-//       <a-icon type="mail" /><span>{{ props.menuInfo.title }}</span>
-//     </span>
-//     <template v-for="item in props.menuInfo.children">
-//       <a-menu-item v-if="!item.children" :key="item.key">
-//         <a-icon type="pie-chart" />
-//         <span>{{ item.title }}</span>
-//       </a-menu-item>
-//       <sub-menu v-else :key="item.key" :menu-info="item" />
-//     </template>
-//   </a-sub-menu>
-// </template>
-// export default {
-//   props: ['menuInfo'],
-// };
 import SubMenu from './SubMenu.vue'
+import {check} from '../../../utils/modules/auth'
 export default {
   components: {
     SubMenu
   },
+  watch:{
+    "$route.path":function(val){
+      this.selectedKeys = this.selectedKeysMap[val]
+      this.openKeys = this.collapsed ? [] : this.openKeysMap[val]
+    }
+  },
   data() {
+    this.selectedKeysMap = {}
+    this.openKeysMap = {}
     const menuData = this.getMenuData(this.$router.options.routes);
     return {
       collapsed: false,
       menuData,
+      selectedKeys: this.selectedKeysMap[this.$route.path],
+      openKeys:this.collapsed ? [] : this.openKeysMap[this.$router.path]
     };
   },
   // mounted(){
@@ -57,22 +49,28 @@ export default {
       this.collapsed = !this.collapsed;
     },
 
-    getMenuData(routes){
+    getMenuData(routes = [],parentKeys = [],selectedKey){
       const menuData = []
-      routes.forEach(item=>{
+      // 循环路由
+      for(let item of routes){
+        if(item.meta && item.meta.authority && !check(item.meta.authority)){
+          break;
+        }
         if(item.name && !item.hideInMenu){
+          this.openKeysMap[item.path] = parentKeys
+          this.selectedKeysMap[item.path] = [selectedKey || item.path]
           const newItem = {...item}
           delete newItem.children
           if(item.children && !item.hideChildrenInMenu){
-            newItem.children = this.getMenuData(item.children)
+            newItem.children = this.getMenuData(item.children,[...parentKeys,item.path])
+          }else{
+            this.getMenuData(item.children,selectedKey ? parentKeys : [...parentKeys,item.path],selectedKey || item.path)
           }
           menuData.push(newItem)
         }else if(!item.hideInMenu && !item.hideChildrenInMenu && item.children){
-          // console.log(item.children);
-          menuData.push(...this.getMenuData(item.children))
+          menuData.push(...this.getMenuData(item.children,[...parentKeys,item.path]))
         }
-      })
-
+      }
       return menuData
     }
   },
