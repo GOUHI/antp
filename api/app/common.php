@@ -139,13 +139,13 @@ function getChild($list,$id=0){
   //循环数据源
   foreach ($list as $key=>$value){
       //判断父级ID是否等于传递过来的ID
-      if($value['father'] == $id){
+      if($value['parent'] == $id){
           //如果等于先保存下来
           $child[$key] = $value;
           //把自己排除在外
           unset($list[$key]);
           //继续去找子级
-          $child[$key]['child'][] = getChild($list,$value['id']);
+          $child[$key]['children'][] = getChild($list,$value['id']);
       }
   }
   //返回数据

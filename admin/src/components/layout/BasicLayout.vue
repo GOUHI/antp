@@ -10,9 +10,8 @@
         <Header />
       </a-layout-header>
       <a-layout-content style="margin: 0 16px">
-        <a-breadcrumb style="margin: 16px 0">
-          <a-breadcrumb-item>User</a-breadcrumb-item>
-          <a-breadcrumb-item>Bill</a-breadcrumb-item>
+        <a-breadcrumb style="margin: 16px 0" v-if="breadCrumbData.length > 0">
+          <a-breadcrumb-item v-for="(item,index) in breadCrumbData" :key="index">{{item}}</a-breadcrumb-item>
         </a-breadcrumb>
         <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
           <router-view></router-view>
@@ -32,8 +31,31 @@ export default {
   data() {
     return {
       collapsed: false,
+      breadCrumbData:[],
+      routeData:{}
     };
   },
+  watch:{
+    // 监听路由变化
+    "$route":function(v){
+      this.routeData = v
+      this.getBreadCrumbData()
+    }
+  },
+  mounted(){
+    this.routeData = this.$route
+    this.getBreadCrumbData()
+  },
+  methods:{
+    getBreadCrumbData(){
+      this.breadCrumbData = []
+      this.routeData.matched.forEach(item=>{
+        if(item.meta && item.meta.title){
+          this.breadCrumbData.push(item.meta.title)
+        }
+      })
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

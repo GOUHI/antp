@@ -1,14 +1,14 @@
 <template>
   <div style="width: 256px">
     <a-menu
-      :selectedKeys="selectedKeys"
+      :selectedKeys="collapsed ? [] : selectedKeys"
       :openKeys.sync="openKeys"
       mode="inline"
       theme="light"
     >
       <template v-for="item in menuData">
         <a-menu-item v-if="!item.children" :key="item.path" @click="() => $router.push({path:item.key})">
-          <a-icon v-if="item.meta.icon" :type="item.meta.icon" />
+          <a-icon v-if="item.meta && item.meta.icon" :type="item.meta && item.meta.icon" />
           <span>{{ item.meta.title }}</span>
         </a-menu-item>
         <sub-menu v-else :key="item.path" :menu-info="item" />

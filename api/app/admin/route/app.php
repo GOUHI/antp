@@ -12,6 +12,14 @@ Route::group('index', function () {
   Route::post('login', 'index/login');
 })->pattern([['id' => '\d+']]);
 
+/**
+ * 菜单操作
+ */
+Route::group('menu',function(){
+  // 获取树形菜单数据
+  Route::get('tree','menu/getTreeMenuList');
+});
+
 // 管理员操作
 Route::group('super', function () {
   // 管理员列表
